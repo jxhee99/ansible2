@@ -1,0 +1,9 @@
+---
+- name: 파일 모으기 - /var/log/secure
+  hosts: all
+  tasks:
+    - name: fetch module
+      fetch:
+        src: /var/log/secure
+        dest: secure-backups/
+        flat: no

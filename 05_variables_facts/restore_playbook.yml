@@ -1,0 +1,64 @@
+---
+- name: restroe playbook.yml
+  hosts: all
+  vars_files:
+    - vars/vars.yml
+  tasks: 
+    # 1) 방화벽 서비스 내리기 - http, https
+    # 2) 서비스 내리기 - firewalld, httpd
+    # 3) 설정파일 지우기
+    # 3-1) /var/www/html/index.html
+    # 3-2) /etc/httpd/secrets
+    # 3-3) /var/www/html/.htaccess
+    # 4) 패키지 삭제 - firewalld, httpd, mod_ssl
+
+
+    # 1) 방화벽 서비스 내리기 - http, https
+    - name: 1) 방화벽 서비스 내리기 - http, https
+      firewalld: 
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      with_items:
+        - "{{ fw_http }}"
+        - "{{ fw_https }}"
+      ignore_errors: yes
+
+    # 2) 서비스 내리기 - firewalld, httpd
+    - name: 2) 서비스 내리기 - firewalld, httpd
+      service: 
+        name: "{{ item }}"
+        state: stopped
+      with_items:
+        - "{{ svc_fw }}"
+        - "{{ svc_web }}"
+        
+    # 3) 설정파일 지우기
+    # 3-1) /var/www/html/index.html
+    # - name: 3-1) /var/www/html/index.html
+    #   file:
+    #     path: /var/www/html/index.html
+    #     state: absent
+
+    # 3-2) /etc/httpd/secrets
+    - name: 3-2) /etc/httpd/secrets
+      file:
+        path: "{{ secrets_dir }}"
+        state: absent
+
+    # 3-3) /var/www/html
+    - name: 3-3) /var/www/html
+      file:
+        path: "{{ web_root }}"
+        state: absent
+
+    # 4) 패키지 삭제 - firewalld, httpd, mod_ssl
+    - name: 4) 패키지 삭제 - firewalld, httpd, mod_ssl
+      yum: 
+        name: "{{ item }}"
+        state: absent
+      with_items:
+        - "{{ pkg_fw }}"
+        - "{{ pkg_http }}"
+        - "{{ pkg_https }}"

@@ -1,0 +1,47 @@
+---
+- name: /etc/named.conf 파일 생성
+  copy: 
+    src: files/named.conf.templete
+    dest: /etc/named.conf
+    owner: root
+    group: named
+    mode: '0640'
+  
+
+- name: /etc/named.rfc1912.zones 파일 생성
+  copy: 
+      src: files/named.rfc1912.zones.template
+      dest: /etc/named.rfc1912.zones
+      owner: root
+      group: named
+      mode: '0640'
+
+
+- name: /var/named/named.ca
+  template: 
+    src: templates/named.ca.j2
+    dest: /var/named/named.ca
+    owner: root
+    group: named
+    mode: '0640'
+  
+
+- name: /var/named/com.zone 파일 생성
+  template: 
+    src: templates/com.zone.j2
+    dest: /var/named/com.zone
+    owner: root
+    group: named
+    mode: '0640'
+ 
+
+- name: /var/named/com.rev 파일 생성
+  template: 
+    src: templates/com.rev.j2
+    dest: /var/named/com.rev
+    owner: root
+    group: named
+    mode: '0640'
+  
+
+

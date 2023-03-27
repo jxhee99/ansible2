@@ -1,0 +1,44 @@
+---
+- name: restore factcheck.yml 
+  hosts: all
+  tasks:
+    # (주의) web1, web2, web3, web4
+    # 0) 방화벽 내리기 - http, https
+    # 1) 웹 서비스 종료 - httpd, firewalld
+    # 2) 웹 서비스 설정 파일 삭제 - /var/www/html/index.html
+    # 3) 웹 패키지 삭제 - httpd, mod_ssl, filewalld
+
+    # 0) 방화벽 내리기 - http, https
+    - name: 0) 방화벽 내리기 - http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+        - http
+        - https
+  
+    # 1) 웹 서비스 종료 - httpd, firewalld
+    - name: 1) 웹 서비스 종료 - httpd, firewalld
+      service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - httpd
+        - firewalld
+
+    # 2) 웹 서비스 설정 파일 삭제 - /var/www/html/index.html
+    - name: 2) 웹 서비스 설정 파일 삭제 - /var/www/html/index.html
+      file: 
+        path: /var/www/html/index.html
+        state: absent
+
+    # 3) 웹 패키지 삭제 - httpd, mod_ssl, filewalld
+    - name: 3) 웹 패키지 삭제 - httpd, mod_ssl, filewalld
+      package: 
+        name:
+          - httpd
+          - mod_ssl
+          - filewalld
+        state: absent

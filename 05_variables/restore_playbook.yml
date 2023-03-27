@@ -1,0 +1,41 @@
+---
+- name: Restore the playbook.yml
+  hosts: all
+  vars_files: vars/vars.yml
+  tasks:
+    # 1) closed firewall - {{ fw_http }}, {{ fw_https }}
+    # 2) remove the web service -/var/www/html/index.html
+    # 3) disable the service - {{ svc_fw }}, {{ svc_web }}
+    # 4) remove the package - {{ pkg_http }}, {{ pkg_https }}, {{ pkg_python }}, {{ pkg_fw }}
+
+    - name: 1) closed firewall - {{ fw_http }}, {{ fw_https }}
+      firewalld: 
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+          - "{{ fw_http }}"
+          - "{{ fw_https }}"
+    
+    - name: 2) remove the web service -/var/www/html/index.html
+      file: 
+        path: /var/www/html/index.html 
+        state: absent
+    
+    - name: 3) disable the service - {{ svc_fw }}, {{ svc_web }}
+      service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - "{{ svc_fw }}"
+        - "{{ svc_web }}"
+    
+    - name: 4) remove the package - {{ pkg_http }}, {{ pkg_https }}, {{ pkg_python }}, {{ pkg_fw }}
+      yum:
+        name: 
+        - "{{ pkg_http }}"
+        - "{{ pkg_https }}"
+        - "{{ pkg_python }}"
+        - "{{ pkg_fw }}"
+        state: absent

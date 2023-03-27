@@ -1,0 +1,8 @@
+---
+- name: test role - ansilbe galaxy
+  hosts: webservers
+  gather_facts: yes
+  remote_user: devops
+  become: true
+  roles:
+    - davidkarban.git 

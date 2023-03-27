@@ -1,0 +1,17 @@
+---
+- name: restore playbook.yml
+  hosts: all 
+  tasks: 
+    - name: mail 서비스 내리기 - postfix
+      service: 
+        name: postfix
+        state: stopped
+        enabled: no
+
+    - name: mail 패키지 삭제 - postfix, dovecot
+      yum: 
+        name:
+          - postfix
+          - dovecot
+        state: absent
+

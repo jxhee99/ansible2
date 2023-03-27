@@ -1,0 +1,60 @@
+---
+- name: restore playbook
+  hosts: webserver
+  tasks:
+    # 1) umount 작업 -  /etc/fstab
+    # 1-1) /dev/vg1/lv1(ext4) --> /mnt/lv1
+    # 1-2) /dev/vg1/lv2(xfs) --> /mnt/lv2
+    # 2) FS 내리기
+    # 2-1) /dev/vg1/lv1 - ext4 ->
+    # 2-2) /dev/vg1/lv2 - xfs ->
+    # 3) LVM 작업 내리기 
+    # 3-1) VG 지우기(vg1)
+    # 3-2) LV 지우기(lv1(50M), lv2(1G))
+    # 4) 파티션 지우기 - /dev/sdb1(1G), /dev/sdc1(1G)
+
+
+    # 1) umount 작업 -  /etc/fstab
+    # 1-1) /dev/vg1/lv1(ext4) --> /mnt/lv1
+    - name: umount --> /mnt/lv1
+      ansible.posix.mount:
+        path: "{{ item }}"
+        state: unmounted
+      with_items: 
+        - /mnt/lv1
+        - /mnt/lv2
+
+    # 2) LVM 작업 내리기 
+    # 2-1) LV지우기
+    - name: LV 지우기 
+      community.general.lvol:
+        vg: vg1
+        lv: /dev/vg1/lv1
+        state: absent   
+        force: yes
+
+    - name: LV 지우기 
+      community.general.lvol:
+        vg: vg1
+        lv: /dev/vg1/lv2
+        state: absent   
+        force: yes
+
+    # 2-2) VG 지우기 - vg1
+    - name: VG 지우기 - vg1
+      community.general.lvg:
+        vg: vg1
+        state: absent
+    
+    # 3) 파티션 지우기 - /dev/sdb1(1G), /dev/sdc1(1G)
+    - name: 파티션 지우기 - /dev/sdb1(1G), /dev/sdc1(1G)
+      community.general.parted:
+        device: "{{ item }}"
+        number: 1
+        state: absent
+      with_items:
+        - /dev/sdb
+        - /dev/sdc
+
+
+        

@@ -1,0 +1,23 @@
+---
+- name: restore playbook.yml
+  hosts: all
+  vars_files: paths.yml
+  tasks:
+   # 1) directory 2개 삭제 - paths.yml
+   # 2) 패키지 2개 삭제 - httpd, tomcat
+
+  - name: directory 삭제 - [참고] paths.yml  
+    file:
+      path: "{{ paths.fileserver }}"
+      state: absent
+    with_items: 
+      - "{{ paths.fileserver }}"
+      - "{{ paths.dbpath }}"
+
+  - name:  패키지 삭제 - httpd, tomcat
+    yum:
+      name:
+        - httpd
+        - tomcat
+      state: absent
+      

@@ -1,0 +1,49 @@
+---
+- name: Restore the web-db.yml
+  hosts: all
+  tasks: 
+    # 1) 방화벽 포트 닫기 - http, https
+    # 2) 웹 서비스 설정 삭제 - /var/www/html/index.html
+    # 3) 서비스 disabled - httpd, mariadb
+    # 4) 패키지 삭제 - web(httpd, php, php-mysqlnd, php-pdo), db(mariadb-server), 
+   
+    - name: 1) 방화벽 포트 닫기 - http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: 2) 웹 서비스 설정 삭제 - /var/www/html/index.html
+      file: 
+        path: /var/www/html/index.html
+        state: absent
+    
+    - name: 3) 서비스 disabled - httpd, mariadb
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+      loop:
+        - httpd
+        - mariadb
+
+    - name: 4) 패키지 삭제 - web, db, firewalld
+      yum: 
+        name:
+          - httpd
+          - php
+          - php-mysqlnd
+          - php-pdo
+          - mariadb-server
+          - firewalld
+        state: absent
+      ignore_errors: yes
+
+
+
+    

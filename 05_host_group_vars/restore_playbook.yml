@@ -1,0 +1,9 @@
+---
+- name : unInstall packages
+  hosts : all
+  tasks : 
+    - name : unInstall packages - {{ package }}
+      yum : 
+        name : "{{ package }}"
+        state : absent
+        

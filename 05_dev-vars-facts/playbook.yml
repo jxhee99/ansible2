@@ -1,0 +1,17 @@
+---
+- name: web server 설정
+  hosts: webserver
+  gather_facts: yes
+  tasks:
+    # 1) 웹 패키지 설치
+    # 2) 웹 서비스 기동
+    - name: 
+      yum:
+        name: "{{ ansible_local.custom.general.package }}"
+        state: present
+    - name:
+      service:
+        name: "{{ ansible_local.custom.general.service }}"
+        state: "{{ ansible_local.custom.general.state }}"
+        enabled: yes
+      

@@ -1,0 +1,6 @@
+---
+- name: playbook_root.yml
+  import_playbook: playbook_root.yml
+
+- name: playbook_domian.yml
+  import_playbook: playbook_domain.yml

@@ -1,0 +1,13 @@
+---
+- name: 사용자 제거
+  hosts: devservers
+  become: true
+  vars_files:
+    - vars/secret.yml
+  tasks:
+    - name: secret.yml 파일을 가지고 사용자 제거
+      user:
+        name: "{{ item.name }}"
+        state: absent
+        remove: yes
+      with_items: "{{ newusers }}"

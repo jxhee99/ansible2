@@ -1,0 +1,10 @@
+---
+- name: lineinfile module
+  hosts: all
+  tasks:
+    - name: add a single line of test to a file
+      lineinfile:
+        path: /home/devops/users.txt
+        line: 2nd line.
+        state: present
+

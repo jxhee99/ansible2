@@ -1,0 +1,23 @@
+---
+- name: restore palybook.yml
+  gather_facts: no
+  hosts: all
+  vars:
+    web_package: httpd   
+    db_package: mariadb-server
+    db_service: mariadb
+  tasks:
+    - name: db_service 내리기
+      service: 
+        name: "{{ db_service }}"
+        state: stopped
+      ignore_errors: yes
+    
+    - name: 패키지 삭제
+      yum: 
+        name:
+          - "{{ web_package }}"
+          - "{{ db_package }}"
+        state: absent
+
+    

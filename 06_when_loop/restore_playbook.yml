@@ -1,0 +1,20 @@
+---
+- name: restore playbook.yml
+  hosts: all
+  tasks: 
+  vars:
+    mariadb_packages:
+      - mariadb-server
+      - python3-PyMySQL 
+    mariadb_service: mariadb
+  tasks:
+    - name:  DB 서비스 내리기
+      service: 
+        name: "{{ mariadb_service }}"
+        state: stopped
+
+    - name: DB 패키지 삭제 
+      yum:
+       name: "{{ item }}"
+       state: absent
+      with_items: "{{ mariadb_packages }}"    
